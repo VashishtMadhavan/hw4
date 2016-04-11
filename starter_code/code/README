@@ -1,0 +1,5 @@
+To run code:
+
+python reconstruct_3d.py
+
+To play around with output, simply go into main function in python code and edit the variables for library and house
