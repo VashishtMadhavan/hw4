@@ -40,8 +40,8 @@ class Reconstruct:
 		for i in range(n):
 			vec1 = np.array([im1_pts[i][0],im1_pts[i][1],1.])
 			vec2 = np.array([im2_pts[i][0],im2_pts[i][1],1.])
-			d12 = np.abs(np.dot(vec1.T,np.dot(F,vec2)))/np.linalg.norm(np.dot(F,vec2),2)
-			d21 = np.abs(np.dot(vec2.T,np.dot(F,vec1)))/np.linalg.norm(np.dot(F,vec1),2)
+			d12 = np.abs(np.dot(vec2.T,np.dot(F,vec1)))/np.linalg.norm(np.dot(F,vec1),2)
+			d21 = np.abs(np.dot(vec2.T,np.dot(F,vec1)))/np.linalg.norm(np.dot(F.T,vec2),2)
 			res += (d12**2) + (d21**2)
 		res /= (2.*n)
 		self.F = F
@@ -73,12 +73,13 @@ class Reconstruct:
 		s[-1]=0.
 		F = np.dot(u,np.dot(np.diag(s),v))
 		F = np.dot(T2.T,np.dot(F,T1))
+		F /= F[2][2]
 		res = 0.
 		for j in range(n):
 			vec1 = np.array([im1_pts[j][0],im1_pts[j][1],1.])
 			vec2 = np.array([im2_pts[j][0],im2_pts[j][1],1.])
-			d12 = np.abs(np.dot(vec1.T,np.dot(F,vec2)))/np.linalg.norm(np.dot(F,vec2),2)
-			d21 = np.abs(np.dot(vec2.T,np.dot(F,vec1)))/np.linalg.norm(np.dot(F,vec1),2)
+			d12 = np.abs(np.dot(vec2.T,np.dot(F,vec1)))/np.linalg.norm(np.dot(F,vec1),2)
+			d21 = np.abs(np.dot(vec2.T,np.dot(F,vec1)))/np.linalg.norm(np.dot(F.T,vec2),2)
 			res += (d12**2) + (d21**2)
 		res /= (2.*n)
 		self.F = F
@@ -187,13 +188,12 @@ if __name__=="__main__":
 	F,res =  library.compute_test_fund()
 	post, posR = library.find_rotation_translation()
 	points,err = library.find_3d_points()
-	library.plot_3d()
-
+	#library.plot_3d()
 	print "house: "
 	house = Reconstruct("house")
 	F,res =  house.compute_test_fund()
 	post, posR = house.find_rotation_translation()
 	points,err = house.find_3d_points()
-	house.plot_3d()
+	#house.plot_3d()
 
 
