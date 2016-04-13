@@ -1,7 +1,5 @@
 # the input to this file should be the directory of your data (i.e. 'house' or 'library')
 import numpy as np
-import cv2
-import cv
 import skimage.io as skio
 import scipy.io as spio
 from mpl_toolkits.mplot3d import Axes3D
@@ -31,21 +29,6 @@ class Reconstruct:
 				self.matches[i][j] = float(self.matches[i][j])
 		self.matches = np.array(self.matches)
 
-	def compute_test_fund(self):
-		im1_pts = self.matches[:,:2]
-		n = im1_pts.shape[0]
-		im2_pts = self.matches[:,2:]		
-		F,mask = cv2.findFundamentalMat(np.float32(im1_pts),np.float32(im2_pts),cv2.FM_8POINT)
-		res = 0.
-		for i in range(n):
-			vec1 = np.array([im1_pts[i][0],im1_pts[i][1],1.])
-			vec2 = np.array([im2_pts[i][0],im2_pts[i][1],1.])
-			d12 = np.abs(np.dot(vec2.T,np.dot(F,vec1)))/np.linalg.norm(np.dot(F,vec1),2)
-			d21 = np.abs(np.dot(vec2.T,np.dot(F,vec1)))/np.linalg.norm(np.dot(F.T,vec2),2)
-			res += (d12**2) + (d21**2)
-		res /= (2.*n)
-		self.F = F
-		return F,res
 
 	def fundamental_matrix(self):
 		im1_pts = self.matches[:,:2]
@@ -185,15 +168,15 @@ class Reconstruct:
 if __name__=="__main__":
 	library = Reconstruct("library")
 	print "library: " 
-	F,res =  library.compute_test_fund()
+	F,res =  library.fundamental_matrix()
 	post, posR = library.find_rotation_translation()
 	points,err = library.find_3d_points()
-	#library.plot_3d()
+	library.plot_3d()
 	print "house: "
 	house = Reconstruct("house")
-	F,res =  house.compute_test_fund()
+	F,res =  house.fundamental_matrix()
 	post, posR = house.find_rotation_translation()
 	points,err = house.find_3d_points()
-	#house.plot_3d()
+	house.plot_3d()
 
 
